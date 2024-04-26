@@ -1,0 +1,37 @@
+{
+  "name": "meowmixsocialnetwork",
+  "version": "1.0.0",
+  "description": "For cat lovers to post all of their favorite cat thoughts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index",
+    "dev": "nodemon index",
+    "seed": "node utils/seed"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sinclairems/MeowMixSocialNetwork.git"
+  },
+  "keywords": [
+    "Mongo",
+    "Mongoose",
+    "Express.js",
+    "API",
+    "social",
+    "network"
+  ],
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^7.0.2"
+  },
+    "devDependencies": {
+    "nodemon": "^2.0.9"
+  },
+  "author": "ErinMS",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sinclairems/MeowMixSocialNetwork/issues"
+  },
+  "homepage": "https://github.com/sinclairems/MeowMixSocialNetwork#readme"
+}
