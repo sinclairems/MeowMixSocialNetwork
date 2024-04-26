@@ -17,29 +17,34 @@ const userSchema = new Schema(
       max_length: 50,
       min_length: 4,
       unique: true,
-      match: [/.+@.+\..+/, 'Please enter a valid e-mail address'],
+      match: [/.+@.+\..+/, "Please enter a valid e-mail address"],
     },
-    thoughts: {
-      type: [thougthsSchema],
-      default: [],
-      //array of _id values referencing the Thoughts model
-    },
-    friends: {
-      type: [Schema.Types.ObjectId],
-      ref: 'User',
-  },
-  //create a virtual call friendCount that retrieves the length of the user's friends array field on query
-  friendCount: {
-    type: Number,
-    default: 0,
-  },
+    thoughts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Thoughts",
+      },
+    ],
+    // Array of `_id` values referencing the `User` model (self-reference)
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     toJSON: {
-      getters: true,
+      virtuals: true,
     },
+    id: false,
   }
 );
+
+  //create a virtual call friendCount that retrieves the length of the user's friends array field on query
+  userSchema.virtual('friendCount').get(function() {
+    return this.friends.length;
+  });
 
 const User = model('user', userSchema);
 
