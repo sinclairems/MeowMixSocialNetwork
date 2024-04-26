@@ -1,54 +1,38 @@
 const { Schema, model } = require('mongoose');
+const thougthsSchema = require('./Thoughts');
 
-
-User
-
-* `username`
-  * String
-  * Unique
-  * Required
-  * Trimmed
-
-* `email`
-  * String
-  * Required
-  * Unique
-  * Must match a valid email address (look into Mongoose's matching validation)
-
-* `thoughts`
-  * Array of `_id` values referencing the `Thought` model
-
-* `friends`
-  * Array of `_id` values referencing the `User` model (self-reference)
-
-**Schema Settings**:
-
-Create a virtual called `friendCount` that retrieves the length of the user's `friends` array field on query.
-
-FOLLOW THIS FORMAT
-
-const { Schema, model } = require('mongoose');
-const assignmentSchema = require('./Assignment');
-
-// Schema to create Student model
-const studentSchema = new Schema(
+// Schema to create User model
+const userSchema = new Schema(
   {
-    first: {
+    username: {
       type: String,
       required: true,
       max_length: 50,
+      min_length: 4,
+      trimmed: true,
     },
-    last: {
+    email: {
       type: String,
       required: true,
       max_length: 50,
+      min_length: 4,
+      unique: true,
+      match: [/.+@.+\..+/, 'Please enter a valid e-mail address'],
     },
-    github: {
-      type: String,
-      required: true,
-      max_length: 50,
+    thoughts: {
+      type: [thougthsSchema],
+      default: [],
+      //array of _id values referencing the Thoughts model
     },
-    assignments: [assignmentSchema],
+    friends: {
+      type: [Schema.Types.ObjectId],
+      ref: 'User',
+  },
+  //create a virtual call friendCount that retrieves the length of the user's friends array field on query
+  friendCount: {
+    type: Number,
+    default: 0,
+  },
   },
   {
     toJSON: {
@@ -57,6 +41,6 @@ const studentSchema = new Schema(
   }
 );
 
-const Student = model('student', studentSchema);
+const User = model('user', userSchema);
 
-module.exports = Student;
+module.exports = User;
