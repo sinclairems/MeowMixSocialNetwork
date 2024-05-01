@@ -22,10 +22,11 @@
     "network"
   ],
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "mongoose": "^7.0.2"
   },
-    "devDependencies": {
+  "devDependencies": {
     "nodemon": "^2.0.9"
   },
   "author": "ErinMS",
