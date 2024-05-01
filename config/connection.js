@@ -1,7 +1,7 @@
-const { connect, connection } = require("mongoose");
+// const { connect, connection } = require("mongoose");
 
-const connectionString = "mongodb://127.0.0.1:27017/meowmixDB";
+// const connectionString = "mongodb://127.0.0.1:27017/meowmixDB";
 
-connect(connectionString);
+// connect(connectionString);
 
-module.exports = connection;
+// module.exports = connection;

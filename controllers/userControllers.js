@@ -1,3 +1,3 @@
-const { ObjectId } = require('mongoose').Types;
-const { User, Thoughts } = require('../models');
+// const { ObjectId } = require('mongoose').Types;
+// const { User, Thoughts } = require('../models');
 

@@ -1,52 +1,112 @@
-**`/api/users`**
+const express = require("express");
+const router = express.Router();
+const { User } = require("../../models");
 
-* `GET` all users
+// GET all users
+router.get("/", async (req, res) => {
+  try {
+    const users = await User.find().populate("thoughts friends");
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching users" });
+  }
+});
 
-* `GET` a single user by its `_id` and populated thought and friend data
+// Get a single user
+router.get("/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).populate(
+      "thoughts friends"
+    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching user" });
+  }
+});
 
-* `POST` a new user:
+// POST to create a new user
+router.post('/', async (req, res) => {
+    try {
+        const newUser = await User.create(req.body);
+        res.json(newUser); 
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error creating user' });
+    }
+});
 
-```json
-// example data
-{
-  "username": "lernantino",
-  "email": "lernantino@gmail.com"
-}
-```
-* `PUT` to update a user by its `_id`
+// PUT to update a user by its _id
+router.put('/:userId', async (req, res) => {
+    try {
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.userId, 
+            req.body, 
+            { new: true, runValidators: true } 
+        );
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(updatedUser);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error updating user' });
+    }
+});
 
-* `DELETE` to remove user by its `_id`
+// DELETE to remove a user by its _id
+router.delete('/:userId', async (req, res) => {
+    try {
+        const deletedUser = await User.findByIdAndDelete(req.params.userId);
+        if (!deletedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        // Cascading deletes for Thoughts when removing a user.
+        res.json({ message: 'User deleted' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error deleting user' });
+    }
+});
 
-**BONUS**: Remove a user's associated thoughts when deleted.
+// POST to add a new friend to a user's friend list
+router.post('/:userId/friends/:friendId', async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(
+            req.params.userId,
+            { $addToSet: { friends: req.params.friendId } }, // $addToSet ensures no duplicates
+            { new: true } 
+        );
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error adding friend' });
+    }
+});
 
-**`/api/users/:userId/friends/:friendId`**
-
-* `POST` to add a new friend to a user's friend list
-
-* `DELETE` to remove a friend from a user's friend list
-
-FOLLOW THIS FORMAT
-
-const router = require('express').Router();
-const {
-  getStudents,
-  getSingleStudent,
-  createStudent,
-  deleteStudent,
-  addAssignment,
-  removeAssignment,
-} = require('../../controllers/studentController');
-
-// /api/students
-router.route('/').get(getStudents).post(createStudent);
-
-// /api/students/:studentId
-router.route('/:studentId').get(getSingleStudent).delete(deleteStudent);
-
-// /api/students/:studentId/assignments
-router.route('/:studentId/assignments').post(addAssignment);
-
-// /api/students/:studentId/assignments/:assignmentId
-router.route('/:studentId/assignments/:assignmentId').delete(removeAssignment);
+// DELETE to remove a friend from a user's friend list
+router.delete('/:userId/friends/:friendId', async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(
+            req.params.userId,
+            { $pull: { friends: req.params.friendId } },  // $pull removes from array
+            { new: true } 
+        );
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user); 
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error removing friend' });
+    }
+});
 
 module.exports = router;
