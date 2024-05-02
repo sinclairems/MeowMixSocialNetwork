@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { User, Thought } = require("../models"); 
 
 mongoose
@@ -6,58 +6,111 @@ mongoose
   .then(() => console.log("Connected to MongoDB!"))
   .catch((err) => console.error(err));
 
-// Seed data for Thoughts
-const thoughtData = [
-  {
-    thoughtText: "Tuna vs. salmon... the eternal debate.",
-    username: "FluffyLover123",
-  },
+  const userData = [
+    {
+      _id: 1,
+      username: "FluffyLover123",
+      email: "fluffy@meowmail.com",
+      friends: ["WhiskersTheWise"],
+    },
+    {
+      _id: 2,
+      username: "WhiskersTheWise",
+      email: "whiskers@meowmail.com",
+      friends: ["FluffyLover123", "MidnightPurr"],
+    },
+    {
+      _id: 3,
+      username: "MidnightPurr",
+      email: "midnight@meowmail.com",
+      friends: [
+        "FluffyLover123",
+        "WhiskersTheWise",
+        "SirWhiskers",
+        "PawsitiveVibes",
+      ],
+    },
+    {
+      _id: 4,
+      username: "SirWhiskers",
+      email: "sirwhiskers@meowmail.com",
+      friends: ["MidnightPurr", "WhiskersTheWise"],
+    },
+    {
+      _id: 5,
+      username: "PawsitiveVibes",
+      email: "pawsitive@meowmail.com",
+      friends: [],
+    },
+  ];
+
+const seedThoughts = [
   {
     thoughtText: "Napping in sunbeams is the ultimate joy.",
-    username: "WhiskersTheWise",
+    username: "WhiskersTheWise", // Make sure this username exists in your users collection
   },
   {
     thoughtText: "Anyone else's cat obsessed with boxes?",
     username: "MidnightPurr",
+    thoughtId: "60f3f5d5e3e7c3c7d8b6e861",
+  },
+  {
+    thoughtText: "Tuna vs. salmon... the eternal debate.",
+    username: "FluffyLover123",
+    thoughtId: "60f3f5d5e3e7c3c7d8b6e862",
   },
   {
     thoughtText: "The art of the slow blink is a powerful thing.",
     username: "SirWhiskers",
+    thoughtId: "60f3f5d5e3e7c3c7d8b6e863",
   },
   {
     thoughtText: "Must ... resist ... the urge to boop the fluffy belly.",
     username: "PawsitiveVibes",
+    thoughtId: "60f3f5d5e3e7c3c7d8b6e864",
   },
 ];
 
-// Seed data for Reactions
-const reactionData = [
-  {
-    reactionBody: "My cat prefers salmon, hands down!",
-    username: "WhiskersTheWise",
-    // Associate with a valid Thought ID
-  },
+const seedReactions = [
   {
     reactionBody: "My cat does! He'll sleep in the tiniest boxes.",
     username: "PawsitiveVibes",
-    // Associate with a valid Thought ID
+    thoughtId: "60f3f5d5e3e7c3c7d8b6e861",
+  },
+  {
+    reactionBody: "My cat prefers salmon, hands down!",
+    username: "WhiskersTheWise",
+    thoughtId: "60f3f5d5e3e7c3c7d8b6e862",
   },
   {
     reactionBody: "Absolutely! It's like a super-charged purr.",
     username: "MidnightPurr",
-    // Associate with a valid Thought ID
+    thoughtId: "60f3f5d5e3e7c3c7d8b6e863",
   },
 ];
 
-// Function to format an array of documents for MongoDB
-function formatDataForCompass(data) {
-  return data.map((item) => JSON.stringify(item, null, 2)).join(",\n");
-}
+const seedDatabase = async () => {
+  try {
+    await User.insertMany(userData);
 
-// Print the formatted data for THOUGHTS
-console.log('Seed data for "thoughts" collection:');
-console.log(formatDataForCompass(thoughtData));
+    const createdThoughts = await Thought.insertMany(seedThoughts);
+    for (const { _id } of createdThoughts) {
+      const user = userData.find((user) => user.username === _id.username);
+      user.thoughts.push(_id);
+      await User
+        .findOneAndUpdate(
+          { username: user.username },
+          { $push: { thoughts: _id } },
+          { new: true }
+        );
+    }
 
-// Print the formatted data for REACTIONS
-console.log('\nSeed data for "reactions" collection:');
-console.log(formatDataForCompass(reactionData));
+    await Reaction.insertMany(seedReactions);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    mongoose.connection.close();
+  }
+};
+
+seedDatabase();
