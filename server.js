@@ -1,28 +1,26 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
-
+const routes = require("./routes");
 const app = express();
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(routes); // Use all routes defined
 
-// Connect to database 
-const mongodbURI = "mongodb://localhost:27017/meowmixDB";
+// Connect to MongoDB
 mongoose
-  .connect(mongodbURI)
-  .then(() => console.log("Connected to MongoDB!"))
-  .catch((err) => console.error("Error connecting to MongoDB:", err));
-
-// Load Models
-const User = require("./models/User");
-const Thought = require("./models/Thought");
-
-// API routes
-app.use("/api/users", require("./routes/api/userRoutes"));
-app.use("/api/thoughts", require("./routes/api/thoughtRoutes"));
-
-// Start Server
-app.listen(port, () => console.log(`Server listening on port ${port}`));
+  .connect(process.env.MONGODB_URI || "mongodb://localhost/meowmix", {
+    // ...connection options...
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  })
+  .then(() => {
+    app.listen(PORT, () => console.log(`🌍 Connected on localhost:${PORT}`));
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB: ", err);
+  });
