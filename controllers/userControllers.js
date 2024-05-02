@@ -1,3 +1,7 @@
-// const { ObjectId } = require('mongoose').Types;
-// const { User, Thoughts } = require('../models');
-
+getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+  addFriend,
+  removeFriend,
