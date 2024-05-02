@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const { Schema, model } = mongoose;
+const Schema = mongoose.Schema;
+const { format } = require("date-fns");
 
 const reactionSchema = new Schema(
   {
@@ -19,7 +20,7 @@ const reactionSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      get: formatTimestamp,
+      get: (timestamp) => format(new Date(timestamp), "MM/dd/yyyy hh:mm a"),
     },
   },
   {
@@ -41,7 +42,7 @@ const thoughtSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      get: formatTimestamp,
+      get: (timestamp) => format(new Date(timestamp), "MM/dd/yyyy hh:mm a"),
     },
     username: {
       type: String,
@@ -62,12 +63,6 @@ const thoughtSchema = new Schema(
 thoughtSchema.virtual("reactionCount").get(function () {
   return this.reactions.length;
 });
-
-// Timestamp Formatting (Getter)
-function formatTimestamp(timestamp) {
-  const options = { year: "numeric", month: "short", day: "numeric" };
-  return new Date(timestamp).toLocaleDateString("en-US", options);
-}
 
 const Thought = model("Thought", thoughtSchema);
 
