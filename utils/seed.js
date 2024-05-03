@@ -1,6 +1,6 @@
-const connection = require("./connection"); // Use your existing connection module
-const { User, Thought } = require("./models"); // Import your MeowMix models
-const { getRandomUsername, getRandomThoughts } = require("./data"); // Adjust data helpers
+const connection = require("../config/connection"); 
+const { User, Thought } = require("../models"); 
+const { getRandomUsername, getRandomThoughts } = require("./data"); 
 
 connection.once("open", async () => {
   console.log("connected");
@@ -10,12 +10,11 @@ connection.once("open", async () => {
 
   // Seed Users
   for (let i = 0; i < 10; i++) {
-    // Seed a smaller number for testing
     const username = getRandomUsername();
-    const email = `${username}@email.com`;
+    const email = `${getRandomUsername()}@email.com`;
 
     // Generate some random thoughts for each user
-    const thoughts = getRandomThoughts(3); // Adjust number of thoughts per user
+    const thoughts = getRandomThoughts(1);
 
     users.push({
       username,
