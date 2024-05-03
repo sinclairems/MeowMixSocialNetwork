@@ -9,7 +9,7 @@ const getRandomUsername = () => {
   const randomIndex = Math.floor(Math.random() * usernamePrefixes.length);
   return `${usernamePrefixes[randomIndex]}${Math.floor(
     Math.random() * 90 + 10
-  )}`; // Add a random number for uniqueness
+  )}`; 
 };
 
 const getRandomThoughts = (numThoughts) => {
